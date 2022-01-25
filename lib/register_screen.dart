@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_literals_to_create_immutables
+
 import 'package:flutter/material.dart';
 
 class RegisterScreen extends StatelessWidget {
@@ -8,7 +10,10 @@ class RegisterScreen extends StatelessWidget {
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
-        children: [Text("Registration ")],
+        children: [
+          // ignore: prefer_const_constructors
+          Text("Registration "),
+        ],
       ),
     );
   }

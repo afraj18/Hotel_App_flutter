@@ -2,11 +2,14 @@
 
 import 'package:ajay/constraints.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 import 'login_screen.dart';
 // import 'register_screen.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(InitialScreen());
 }
 

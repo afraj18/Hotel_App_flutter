@@ -1,12 +1,12 @@
-// ignore_for_file: prefer_const_constructors, duplicate_ignore, avoid_print, unused_field
-
-import 'dart:ui';
+// ignore_for_file: prefer_const_constructors, duplicate_ignore, avoid_print, unused_field, deprecated_member_use
 
 import 'package:ajay/colors.dart';
 import 'package:ajay/home_screen.dart';
+import 'package:flutter/services.dart';
 
 import 'constraints.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -18,8 +18,30 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
   late String _email, _password;
+
+  void signIn(BuildContext context) async {
+    await FirebaseAuth.instance
+        .signInWithEmailAndPassword(email: _email, password: _password)
+        .catchError((onError) {
+      print("Error" + onError);
+    }).then((authUser) {
+      // print("Hello " + authUser.user!.uid);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HomeScreen(),
+        ),
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+      ),
+    );
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
 
@@ -135,12 +157,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     onSaved: (value) {
                       _email = value!;
                     },
-                    validator: (value) {
-                      if (value!.isEmpty) {
+                    validator: (_email) {
+                      if (_email!.isEmpty) {
                         return "Please enter the email address";
                       } else if (!RegExp(
                               r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                          .hasMatch(value)) {
+                          .hasMatch(_email)) {
                         return "Not a valid email";
                       }
                       return null;
@@ -195,6 +217,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 Align(
                   alignment: Alignment.centerRight,
+                  // ignore: deprecated_member_use
                   child: FlatButton(
                     onPressed: () {},
                     child: Text("Forgot Password?"),
@@ -214,19 +237,28 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPressed: () {
                         if (formKey.currentState!.validate()) {
                           formKey.currentState!.save();
-                          if (_email == "test@gmail.com" &&
-                              _password == "test1234") {
-                            // print("Login Success");
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => HomeScreen(),
-                              ),
-                            );
-                            FocusScope.of(context).unfocus();
-                          } else {
-                            print("Invalid Credentials");
-                          }
+
+                          signIn(context);
+                          // print(_email);
+                          // print(_password);
+                          // if (_email == "test@gmail.com" &&
+                          //     _password == "test1234") {
+                          //   _email = "";
+                          //   _password = "";
+                          //   // print("Login Success");
+                          //   Navigator.push(
+                          //     context,
+                          //     MaterialPageRoute(
+                          //       builder: (context) => HomeScreen(),
+                          //     ),
+                          //   );
+                          //   FocusScope.of(context).unfocus();
+                          // } else {
+                          //   print("Invalid Credentials");
+                          //   // AlertDialog(
+                          //   //   title: Text("Wrong Credentials"),
+                          //   // );
+                          // }
                         } else {
                           print("not valid");
                         }
